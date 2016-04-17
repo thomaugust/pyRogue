@@ -1,62 +1,90 @@
 
 # Main file where story should be based.
 
+from sys import exit
 from random import randint
 from time import sleep
-import city
-import dune
-import ghetto
+
+class room(object):
+    def enter(self):
+        print "This room is not yet configured. Subclass it and implement enter()"
+        exit()
+
+class engine(object):
+    def __init__(self, roomMap):
+        self.roomMap = roomMap
+
+    def play(self):
+        currentRoom = self.roomMap.spawn()
+        lastRoom = self.roomMap.nextRoom(finished)
+
+        while currentRoom != lastRoom:
+            nextRoomName = currentRoom.enter()
+            currentRoom = self.roomMap.nextRoom(nextRoomName)
+
+        currentRoom.enter()
 
    # #
-   # #    ####  #####  ###### ###### ##### # #    #  ####
- ####### #    # #    # #      #        #   # ##   # #    #
-   # #   #      #    # #####  #####    #   # # #  # #
- ####### #  ### #####  #      #        #   # #  # # #  ###
-   # #   #    # #   #  #      #        #   # #   ## #    #
-   # #    ####  #    # ###### ######   #   # #    #  ####
+   # #   #####   ####   ####  #    #  ####
+ ####### #    # #    # #    # ##  ## #
+   # #   #    # #    # #    # # ## #  ####
+ ####### #####  #    # #    # #    #      #
+   # #   #   #  #    # #    # #    # #    #
+   # #   #    #  ####   ####  #    #  ####
 
-greetings = [
-"Hello. Come here often? Just kidding, what's your name?",
-"Wassup, homie. Whats yo name, dawg?",
-"FAM!",
-"Give name pls"]
+class death(room):
+    def enter(self):
+        print 'You died. Try again?'
+        exit(1)
 
-def greeting():
-    print greetings[randint(0,3)]
-    username = raw_input('> ')
-    print "Nice to meet you, %s" % username
-    sleep(1)
-    print 'Now not to alarm you or anything, this game is very bs and you better not get triggered. This is the only warning.'
-    sleep(1)
-    print 'also im bad at programming so if you quit this terminal you lose everything. its a better version of permadeath <3'
-    sleep(1)
-    spawn()
+class finished(room):
+    def enter(self):
+        print "Congratulations, you finished the game."
+
+class bedroom(room):
+    def enter(self):
+        print "You are in your room."
+
+class kitchen(room):
+    def enter(self):
+        print 'You walk into the kitchen.'
+
+class street(room):
+    def enter(self):
+        print 'You walk out onto the street.'
+
+class school(room):
+    def enter(self):
+        print 'You walk into your classroom.'
 
    # #
-   # #    ####  #####    ##   #    # #    #
- ####### #      #    #  #  #  #    # ##   #
-   # #    ####  #    # #    # #    # # #  #
- #######      # #####  ###### # ## # #  # #
-   # #   #    # #      #    # ##  ## #   ##
-   # #    ####  #      #    # #    # #    #
+   # #   #    #   ##   #####
+ ####### ##  ##  #  #  #    #
+   # #   # ## # #    # #    #
+ ####### #    # ###### #####
+   # #   #    # #    # #
+   # #   #    # #    # #
 
-inventory = []
-    #Figure out how to make random spawns work
-    #spawns = [dune,city,ghetto]
-    #spawns[randint(0,2)].main()
+class map(object):
 
-def spawn():
-    print "Pick a number between 1 and 3"
-    spawnChoice = raw_input('> ')
-    if spawnChoice == 1:
-        dune.main()
-    if spawnChoice == 2:
-        city.main()
-    if spawnChoice == 3:
-        ghetto.main()
-    else:
-        "That's not how it works."
-        sleep(1)
-        spawn()
+    rooms = {
+    'bedroom': bedroom(),
+    'kitchen': kitchen(),
+    'street': street(),
+    'school': school(),
+    'finished': finished()
+    }
 
-greeting()
+    def __init__(self, startRoom):
+        self.startRoom = startRoom
+
+    def nextRoom(self, roomName):
+        v = map.scenes.get(roomName)
+        return v
+
+    def spawn(self):
+        return self.nextRoom(self.startRoom)
+
+theMap = map('bedroom')
+theGame = engine(theMap) #you just lost the game
+theGame.play
